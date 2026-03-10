@@ -6,11 +6,27 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 exports.handler = async (event, context) => {
   try {
+    // Get ID from path parameters
+    const id = event.pathParameters?.id;
+    
+    if (!id) {
+      return {
+        statusCode: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+          "Access-Control-Allow-Methods": "PUT,OPTIONS"
+        },
+        body: JSON.stringify({ error: "Course ID is required" })
+      };
+    }
+
     // Parse the body if it's a string (API Gateway format)
-    const body = typeof event.body === 'string' ? JSON.parse(event.body) : event;
+    const body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
     
     const courseItem = {
-      id: body.id,
+      id: id,
       title: body.title,
       watchHref: body.watchHref,
       authorId: body.authorId,
@@ -29,7 +45,9 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Methods": "PUT,OPTIONS"
       },
       body: JSON.stringify(courseItem)
     };
@@ -37,6 +55,12 @@ exports.handler = async (event, context) => {
     console.error("Error:", err);
     return {
       statusCode: 500,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Methods": "PUT,OPTIONS"
+      },
       body: JSON.stringify({ error: err.message })
     };
   }

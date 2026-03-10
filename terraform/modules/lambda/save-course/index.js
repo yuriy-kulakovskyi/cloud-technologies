@@ -11,7 +11,20 @@ const replaceAll = (str, find, replace) => {
 exports.handler = async (event, context) => {
   try {
     // Parse the body if it's a string (API Gateway format)
-    const body = typeof event.body === 'string' ? JSON.parse(event.body) : event;
+    const body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
+    
+    if (!body || !body.title) {
+      return {
+        statusCode: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+          "Access-Control-Allow-Methods": "POST,OPTIONS"
+        },
+        body: JSON.stringify({ error: "Course title is required" })
+      };
+    }
     
     const id = replaceAll(body.title, " ", "-").toLowerCase();
     const courseItem = {
@@ -34,7 +47,9 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Methods": "POST,OPTIONS"
       },
       body: JSON.stringify(courseItem)
     };
@@ -42,6 +57,12 @@ exports.handler = async (event, context) => {
     console.error("Error:", err);
     return {
       statusCode: 500,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Methods": "POST,OPTIONS"
+      },
       body: JSON.stringify({ error: err.message })
     };
   }

@@ -6,9 +6,21 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 exports.handler = async (event, context) => {
   try {
-    // Parse the body if it's a string (API Gateway format)
-    const body = typeof event.body === 'string' ? JSON.parse(event.body) : event;
-    const id = body.id || event.id;
+    // Get ID from path parameters
+    const id = event.pathParameters?.id;
+
+    if (!id) {
+      return {
+        statusCode: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+          "Access-Control-Allow-Methods": "GET,OPTIONS"
+        },
+        body: JSON.stringify({ error: "Course ID is required" })
+      };
+    }
 
     const params = {
       TableName: "courses",
@@ -24,7 +36,9 @@ exports.handler = async (event, context) => {
         statusCode: 404,
         headers: {
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*"
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+          "Access-Control-Allow-Methods": "GET,OPTIONS"
         },
         body: JSON.stringify({ error: "Course not found" })
       };
@@ -34,7 +48,9 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Methods": "GET,OPTIONS"
       },
       body: JSON.stringify(data.Item)
     };
@@ -42,6 +58,12 @@ exports.handler = async (event, context) => {
     console.error("Error:", err);
     return {
       statusCode: 500,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Methods": "GET,OPTIONS"
+      },
       body: JSON.stringify({ error: err.message })
     };
   }
