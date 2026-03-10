@@ -80,3 +80,35 @@ output "api_endpoints" {
     delete_course   = "${module.api_gateway.full_invoke_url}/courses/{id}"
   }
 }
+
+# S3 Website
+output "website_bucket_name" {
+  description = "Name of the S3 bucket hosting the website"
+  value       = module.frontend_website.bucket_name
+}
+
+output "website_url" {
+  description = "URL of the static website"
+  value       = module.frontend_website.website_url
+}
+
+output "website_endpoint" {
+  description = "Website endpoint"
+  value       = module.frontend_website.website_endpoint
+}
+
+# CloudFront
+output "cloudfront_distribution_id" {
+  description = "ID of the CloudFront distribution"
+  value       = module.cloudfront.cloudfront_distribution_id
+}
+
+output "cloudfront_domain_name" {
+  description = "Domain name of the CloudFront distribution"
+  value       = module.cloudfront.cloudfront_domain_name
+}
+
+output "cloudfront_url" {
+  description = "HTTPS URL of the CloudFront distribution"
+  value       = module.cloudfront.cloudfront_url
+}

@@ -117,3 +117,34 @@ module "api_gateway" {
     Environment = "dev"
   }
 }
+
+# S3 Static Website
+module "frontend_website" {
+  source = "./modules/s3-website"
+  
+  bucket_name      = "courses-app-frontend-${data.aws_caller_identity.current.account_id}"
+  build_directory  = "${path.module}/../react-app-frontend/build"
+  
+  tags = {
+    Name        = "courses-frontend"
+    Environment = "dev"
+  }
+}
+
+# CloudFront Distribution
+module "cloudfront" {
+  source = "./modules/cloudfront"
+  
+  bucket_regional_domain_name = module.frontend_website.bucket_regional_domain_name
+  website_endpoint            = module.frontend_website.website_endpoint
+  bucket_id                   = module.frontend_website.bucket_name
+  distribution_comment        = "CloudFront distribution for courses React app"
+  
+  tags = {
+    Name        = "courses-frontend-cdn"
+    Environment = "dev"
+  }
+}
+
+# Get current AWS account ID
+data "aws_caller_identity" "current" {}
