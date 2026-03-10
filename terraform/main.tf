@@ -148,3 +148,96 @@ module "cloudfront" {
 
 # Get current AWS account ID
 data "aws_caller_identity" "current" {}
+
+# SNS Topic for Error Notifications
+module "error_alerts_sns" {
+  source = "./modules/sns"
+  
+  topic_name    = "lambda-error-alerts"
+  display_name  = "Lambda Error Notifications"
+  email_addresses = [
+    "yurii.kulakovskyi.ri.2024@lpnu.ua"
+  ]
+  
+  tags = {
+    Name        = "lambda-error-alerts"
+    Environment = "dev"
+  }
+}
+
+# Error Processor Lambda Function
+module "error_processor_lambda" {
+  source = "./modules/lambda/error-processor"
+  
+  function_name         = "lambda-error-processor"
+  sns_topic_arn         = module.error_alerts_sns.topic_arn
+  slack_webhook_url     = var.slack_webhook_url  # Optional: Add Slack webhook URL
+  region                = "eu-central-1"
+  log_group_arn_pattern = "arn:aws:logs:eu-central-1:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/*"
+  
+  tags = {
+    Name        = "error-processor"
+    Environment = "dev"
+  }
+}
+
+# CloudWatch Log Subscriptions for each Lambda function
+module "get_all_authors_error_subscription" {
+  source = "./modules/cloudwatch-subscription"
+  
+  lambda_function_name  = "get-all-authors"
+  log_group_name        = "/aws/lambda/get-all-authors"
+  filter_pattern        = "?ERROR ?CRITICAL ?5xx"
+  destination_lambda_arn = module.error_processor_lambda.lambda_function_arn
+  lambda_permission_id   = module.error_processor_lambda.lambda_function_name
+}
+
+module "get_all_courses_error_subscription" {
+  source = "./modules/cloudwatch-subscription"
+  
+  lambda_function_name  = "get-all-courses"
+  log_group_name        = "/aws/lambda/get-all-courses"
+  filter_pattern        = "?ERROR ?CRITICAL ?5xx"
+  destination_lambda_arn = module.error_processor_lambda.lambda_function_arn
+  lambda_permission_id   = module.error_processor_lambda.lambda_function_name
+}
+
+module "get_course_error_subscription" {
+  source = "./modules/cloudwatch-subscription"
+  
+  lambda_function_name  = "get-course"
+  log_group_name        = "/aws/lambda/get-course"
+  filter_pattern        = "?ERROR ?CRITICAL ?5xx"
+  destination_lambda_arn = module.error_processor_lambda.lambda_function_arn
+  lambda_permission_id   = module.error_processor_lambda.lambda_function_name
+}
+
+module "save_course_error_subscription" {
+  source = "./modules/cloudwatch-subscription"
+  
+  lambda_function_name  = "save-course"
+  log_group_name        = "/aws/lambda/save-course"
+  filter_pattern        = "?ERROR ?CRITICAL ?5xx"
+  destination_lambda_arn = module.error_processor_lambda.lambda_function_arn
+  lambda_permission_id   = module.error_processor_lambda.lambda_function_name
+}
+
+module "update_course_error_subscription" {
+  source = "./modules/cloudwatch-subscription"
+  
+  lambda_function_name  = "update-course"
+  log_group_name        = "/aws/lambda/update-course"
+  filter_pattern        = "?ERROR ?CRITICAL ?5xx"
+  destination_lambda_arn = module.error_processor_lambda.lambda_function_arn
+  lambda_permission_id   = module.error_processor_lambda.lambda_function_name
+}
+
+module "delete_course_error_subscription" {
+  source = "./modules/cloudwatch-subscription"
+  
+  lambda_function_name  = "delete-course"
+  log_group_name        = "/aws/lambda/delete-course"
+  filter_pattern        = "?ERROR ?CRITICAL ?5xx"
+  destination_lambda_arn = module.error_processor_lambda.lambda_function_arn
+  lambda_permission_id   = module.error_processor_lambda.lambda_function_name
+}

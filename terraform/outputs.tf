@@ -112,3 +112,33 @@ output "cloudfront_url" {
   description = "HTTPS URL of the CloudFront distribution"
   value       = module.cloudfront.cloudfront_url
 }
+
+# Monitoring & Alerts
+output "error_alerts_sns_topic_arn" {
+  description = "ARN of the SNS topic for error alerts"
+  value       = module.error_alerts_sns.topic_arn
+}
+
+output "error_processor_lambda_arn" {
+  description = "ARN of the error processor Lambda function"
+  value       = module.error_processor_lambda.lambda_function_arn
+}
+
+output "monitoring_setup" {
+  description = "Monitoring configuration summary"
+  value = {
+    sns_topic              = module.error_alerts_sns.topic_name
+    error_processor        = module.error_processor_lambda.lambda_function_name
+    monitored_functions    = [
+      "get-all-authors",
+      "get-all-courses",
+      "get-course",
+      "save-course",
+      "update-course",
+      "delete-course"
+    ]
+    filter_pattern         = "?ERROR ?CRITICAL ?5xx"
+    notifications_enabled  = "Email and Slack (if configured)"
+  }
+}
+

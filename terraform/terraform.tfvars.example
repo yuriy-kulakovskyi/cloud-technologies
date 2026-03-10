@@ -1,0 +1,11 @@
+# Example terraform.tfvars file
+# Copy this to terraform.tfvars and fill in your values
+
+# Slack Webhook URL (optional)
+# To get a Slack webhook URL:
+# 1. Go to https://api.slack.com/apps
+# 2. Create a new app or select existing
+# 3. Enable "Incoming Webhooks"
+# 4. Create a webhook for your channel
+# 5. Copy the webhook URL here
+# slack_webhook_url = "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
