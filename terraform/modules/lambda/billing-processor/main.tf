@@ -12,7 +12,18 @@ data "archive_file" "lambda_zip" {
   type        = "zip"
   source_file = "${path.module}/index.py"
   output_path = "${path.module}/billing-processor.zip"
-}
+}# Trigger error: Invalid course ID
+curl https://q5ucammh0g.execute-api.eu-central-1.amazonaws.com/prod/courses/invalid-id-123
+
+# Trigger error: Missing data
+curl -X POST https://q5ucammh0g.execute-api.eu-central-1.amazonaws.com/prod/courses \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+# Trigger error: Malformed JSON
+curl -X POST https://q5ucammh0g.execute-api.eu-central-1.amazonaws.com/prod/courses \
+  -H "Content-Type: application/json" \
+  -d 'invalid json'
 
 # IAM Role for Lambda
 resource "aws_iam_role" "lambda_role" {
