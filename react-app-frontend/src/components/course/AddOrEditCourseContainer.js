@@ -20,10 +20,15 @@ export class AddOrEditCourseContainer extends React.Component {
 
 
     componentDidMount() {
-        this.props.action.getCourseAction(this.props.match.params.id)
-            .catch(error => {
-                toastr.error(error);
-            });
+        const courseId = this.props.match.params.id;
+        
+        // Only fetch course if we're editing (id exists)
+        if (courseId) {
+            this.props.action.getCourseAction(courseId)
+                .catch(error => {
+                    toastr.error(error);
+                });
+        }
 
         this.props.action.getAuthorsAction()
             .catch(error => {
