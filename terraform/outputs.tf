@@ -1,0 +1,82 @@
+# Output values for the infrastructure
+
+# DynamoDB Tables
+output "courses_table_name" {
+  description = "Name of the courses DynamoDB table"
+  value       = module.courses_table.table_name
+}
+
+output "courses_table_arn" {
+  description = "ARN of the courses DynamoDB table"
+  value       = module.courses_table.table_arn
+}
+
+output "authors_table_name" {
+  description = "Name of the authors DynamoDB table"
+  value       = module.authors_table.table_name
+}
+
+output "authors_table_arn" {
+  description = "ARN of the authors DynamoDB table"
+  value       = module.authors_table.table_arn
+}
+
+# Lambda Functions
+output "get_all_authors_lambda_arn" {
+  description = "ARN of the get-all-authors Lambda function"
+  value       = module.get_all_authors_lambda.lambda_function_arn
+}
+
+output "get_all_courses_lambda_arn" {
+  description = "ARN of the get-all-courses Lambda function"
+  value       = module.get_all_courses_lambda.lambda_function_arn
+}
+
+output "get_course_lambda_arn" {
+  description = "ARN of the get-course Lambda function"
+  value       = module.get_course_lambda.lambda_function_arn
+}
+
+output "save_course_lambda_arn" {
+  description = "ARN of the save-course Lambda function"
+  value       = module.save_course_lambda.lambda_function_arn
+}
+
+output "update_course_lambda_arn" {
+  description = "ARN of the update-course Lambda function"
+  value       = module.update_course_lambda.lambda_function_arn
+}
+
+output "delete_course_lambda_arn" {
+  description = "ARN of the delete-course Lambda function"
+  value       = module.delete_course_lambda.lambda_function_arn
+}
+
+# API Gateway
+output "api_gateway_id" {
+  description = "ID of the API Gateway"
+  value       = module.api_gateway.api_id
+}
+
+output "api_gateway_url" {
+  description = "Full invoke URL of the API Gateway"
+  value       = module.api_gateway.full_invoke_url
+}
+
+output "api_gateway_stage" {
+  description = "Stage name of the API Gateway"
+  value       = module.api_gateway.stage_name
+}
+
+# API Endpoints
+output "api_endpoints" {
+  description = "Available API endpoints"
+  value = {
+    get_authors     = "${module.api_gateway.full_invoke_url}/authors"
+    get_courses     = "${module.api_gateway.full_invoke_url}/courses"
+    get_course      = "${module.api_gateway.full_invoke_url}/courses/{id}"
+    create_course   = "${module.api_gateway.full_invoke_url}/courses"
+    update_course   = "${module.api_gateway.full_invoke_url}/courses/{id}"
+    delete_course   = "${module.api_gateway.full_invoke_url}/courses/{id}"
+  }
+}
