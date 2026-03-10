@@ -14,6 +14,12 @@ provider "aws" {
   region = "eu-central-1"
 }
 
+# US East 1 provider for billing alarms (billing metrics only available in us-east-1)
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+}
+
 # DynamoDB Tables
 module "courses_table" {
   source = "./modules/dynamodb/courses"
@@ -240,4 +246,49 @@ module "delete_course_error_subscription" {
   filter_pattern        = "?ERROR ?CRITICAL ?5xx"
   destination_lambda_arn = module.error_processor_lambda.lambda_function_arn
   lambda_permission_id   = module.error_processor_lambda.lambda_function_name
+}
+
+# ===================================================
+# BILLING ALARM (US East 1)
+# ===================================================
+
+# SNS topic for billing alerts in us-east-1
+module "billing_alerts_sns" {
+  source = "./modules/sns"
+  
+  providers = {
+    aws = aws.us_east_1
+  }
+  
+  topic_name        = "billing-alerts"
+  display_name      = "AWS Billing Alerts"
+  email_addresses   = var.billing_alert_emails
+}
+
+# Lambda processor to forward billing alarms to Slack
+module "billing_processor_lambda" {
+  source = "./modules/lambda/billing-processor"
+  
+  providers = {
+    aws = aws.us_east_1
+  }
+  
+  function_name      = "billing-notification-processor"
+  sns_topic_arn      = module.billing_alerts_sns.topic_arn
+  slack_webhook_url  = var.slack_webhook_url
+  environment        = "dev"
+}
+
+# Billing alarm to monitor estimated charges
+module "billing_alarm" {
+  source = "./modules/billing-alarm"
+  
+  providers = {
+    aws = aws.us_east_1
+  }
+  
+  alarm_name         = "aws-billing-alert"
+  billing_threshold  = var.billing_threshold
+  sns_topic_arn      = module.billing_alerts_sns.topic_arn
+  environment        = "dev"
 }

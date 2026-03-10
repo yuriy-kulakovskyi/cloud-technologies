@@ -142,3 +142,35 @@ output "monitoring_setup" {
   }
 }
 
+# Billing Alarm Outputs
+output "billing_alarm_arn" {
+  description = "ARN of the billing alarm"
+  value       = module.billing_alarm.alarm_arn
+}
+
+output "billing_alarm_name" {
+  description = "Name of the billing alarm"
+  value       = module.billing_alarm.alarm_name
+}
+
+output "billing_alerts_sns_topic_arn" {
+  description = "ARN of the SNS topic for billing alerts"
+  value       = module.billing_alerts_sns.topic_arn
+}
+
+output "billing_processor_lambda_arn" {
+  description = "ARN of the billing processor Lambda function"
+  value       = module.billing_processor_lambda.lambda_function_arn
+}
+
+output "billing_setup" {
+  description = "Billing alarm configuration"
+  value = {
+    alarm_name           = module.billing_alarm.alarm_name
+    threshold_usd        = var.billing_threshold
+    sns_topic            = module.billing_alerts_sns.topic_name
+    processor_lambda     = module.billing_processor_lambda.lambda_function_name
+    region               = "us-east-1"
+    notifications        = "Email and Slack"
+  }
+}

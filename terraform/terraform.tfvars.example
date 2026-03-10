@@ -9,3 +9,11 @@
 # 4. Create a webhook for your channel
 # 5. Copy the webhook URL here
 # slack_webhook_url = "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+
+# Billing Alarm Configuration
+billing_threshold = 50  # Alert when estimated charges exceed $50 USD
+
+# Email addresses for billing alerts (you'll need to confirm these via email)
+billing_alert_emails = [
+  "your-email@example.com"  # Replace with your actual email address
+]
