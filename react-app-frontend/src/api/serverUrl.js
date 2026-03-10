@@ -1,1 +1,1 @@
-export default "http://localhost:4000";
+export default "https://q5ucammh0g.execute-api.eu-central-1.amazonaws.com/prod";
